@@ -3,12 +3,15 @@ package commands
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/itsmandrew/Pokedex-Cli/api"
+	pk "github.com/itsmandrew/Pokedex-Cli/internal"
 	"github.com/itsmandrew/Pokedex-Cli/models"
 )
 
 var Table map[string]cliCommand
+var Cache *pk.Cache
 
 func init() {
 
@@ -38,6 +41,8 @@ func init() {
 			Callback:    func() error { return CommandMapb(&cfg) },
 		},
 	}
+
+	Cache = pk.NewCache(3 * time.Minute)
 }
 
 type cliCommand struct {
@@ -65,7 +70,7 @@ func CommandHelp(config *models.Config) error {
 
 func CommandMap(config *models.Config) error {
 
-	cfg, err := api.GetLocationAreas(config.Next)
+	cfg, err := api.GetLocationAreas(config.Next, Cache)
 	if err != nil {
 		return err
 	}
@@ -87,7 +92,7 @@ func CommandMapb(config *models.Config) error {
 		return nil
 	}
 
-	cfg, err := api.GetLocationAreas(config.Previous)
+	cfg, err := api.GetLocationAreas(config.Previous, Cache)
 
 	if err != nil {
 		return err
