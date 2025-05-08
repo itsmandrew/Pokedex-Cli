@@ -1,4 +1,4 @@
-package commands
+package utils
 
 import (
 	"fmt"
@@ -23,22 +23,27 @@ func init() {
 		"exit": {
 			Name:        "exit",
 			Description: "Exit the Pokedex",
-			Callback:    func() error { return CommandExit(&cfg) },
+			Callback:    func(args []string) error { return CommandExit(&cfg, args) },
 		},
 		"help": {
 			Name:        "help",
 			Description: "Displays a help message",
-			Callback:    func() error { return CommandHelp(&cfg) },
+			Callback:    func(args []string) error { return CommandHelp(&cfg, args) },
 		},
 		"map": {
 			Name:        "map",
 			Description: "Displays the names of 20 location areas",
-			Callback:    func() error { return CommandMap(&cfg) },
+			Callback:    func(args []string) error { return CommandMap(&cfg, args) },
 		},
 		"mapb": {
-			Name:        "map",
+			Name:        "mapb",
 			Description: "Displays the previous 20 location areas",
-			Callback:    func() error { return CommandMapb(&cfg) },
+			Callback:    func(args []string) error { return CommandMapb(&cfg, args) },
+		},
+		"explore": {
+			Name:        "explore",
+			Description: "Lists all the possible pokemon encounters in a location area",
+			Callback:    func(args []string) error { return CommandExplore(&cfg, args) },
 		},
 	}
 
@@ -48,16 +53,16 @@ func init() {
 type cliCommand struct {
 	Name        string
 	Description string
-	Callback    func() error
+	Callback    func(args []string) error
 }
 
-func CommandExit(config *models.Config) error {
+func CommandExit(config *models.Config, args []string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func CommandHelp(config *models.Config) error {
+func CommandHelp(config *models.Config, args []string) error {
 
 	fmt.Println("Usage:")
 	fmt.Println()
@@ -68,7 +73,7 @@ func CommandHelp(config *models.Config) error {
 	return nil
 }
 
-func CommandMap(config *models.Config) error {
+func CommandMap(config *models.Config, args []string) error {
 
 	cfg, err := api.GetLocationAreas(config.Next, Cache)
 	if err != nil {
@@ -85,7 +90,7 @@ func CommandMap(config *models.Config) error {
 	return nil
 }
 
-func CommandMapb(config *models.Config) error {
+func CommandMapb(config *models.Config, args []string) error {
 
 	if config.Previous == "" {
 		fmt.Println("no previous URL")
@@ -105,5 +110,23 @@ func CommandMapb(config *models.Config) error {
 		fmt.Println(area.Name)
 	}
 
+	return nil
+}
+
+func CommandExplore(config *models.Config, args []string) error {
+
+	locationName := args[0]
+
+	area, err := api.GetAreaPokemon(locationName)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Exploring %s...\n", locationName)
+	fmt.Println("Found Pokemon:")
+	for _, pk := range area.PokemonEncounters {
+		fmt.Printf("- %s\n", pk.Pokemon.Name)
+	}
 	return nil
 }

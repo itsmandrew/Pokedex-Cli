@@ -1,12 +1,34 @@
 package models
 
-type LocationArea struct {
-	Name string `json:"name"`
-	URL  string `json:"url"`
-}
-
 type Config struct {
 	Next     string         `json:"next"`
 	Previous string         `json:"previous"`
 	Results  []LocationArea `json:"results"`
+}
+
+type NamedAPIResource struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
+}
+
+// LocationArea mirrors the top‐level JSON for /location-area/{id or name}/.
+type LocationArea struct {
+	ID                int                `json:"id"`
+	Name              string             `json:"name"`
+	PokemonEncounters []PokemonEncounter `json:"pokemon_encounters"`
+}
+
+// PokemonEncounter is each element in “pokemon_encounters”.
+type PokemonEncounter struct {
+	// The nested “pokemon” resource
+	Pokemon        NamedAPIResource         `json:"pokemon"`
+	VersionDetails []EncounterVersionDetail `json:"version_details"`
+}
+
+// EncounterVersionDetail tells you in which game versions this Pokémon appears
+// and how rare it is.
+type EncounterVersionDetail struct {
+	Version NamedAPIResource `json:"version"`
+	// The “rarity” field is an integer percentage (0–100).
+	Rarity int `json:"rarity"`
 }

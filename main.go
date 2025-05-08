@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	cmd "github.com/itsmandrew/Pokedex-Cli/cmds"
+	cmd "github.com/itsmandrew/Pokedex-Cli/commands"
 )
 
 const COMMAND_KEY string = "Pokedex > "
@@ -26,14 +26,16 @@ func main() {
 			fmt.Println("\nGoodbye")
 		}
 
-		line := strings.TrimSpace(scanner.Text())
-		val, ok := cmd.Table[line]
+		fields := strings.Fields(scanner.Text())
+		cmdName, args := fields[0], fields[1:]
+
+		val, ok := cmd.Table[cmdName]
 		if !ok {
-			fmt.Println("Unknown command:", line)
+			fmt.Println("Unknown command:", cmdName)
 			continue
 		}
 
-		if err := val.Callback(); err != nil {
+		if err := val.Callback(args); err != nil {
 			fmt.Println("Issue with callback:", err)
 			os.Exit(1)
 		}
