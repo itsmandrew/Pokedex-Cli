@@ -29,7 +29,7 @@ func GetAreaPokemon(location string, cache *pk.Cache) (m.LocationArea, error) {
 	return area, err
 }
 
-func fetchAndUnmarshal(url string, cache *pk.Cache, target any) error {
+func fetchAndUnmarshal(url string, cache pk.Cacher, target any) error {
 
 	cacheData, cacheHit := cache.Get(url)
 	var data []byte
