@@ -20,12 +20,12 @@ func GetLocationAreas(url string, cache *pk.Cache) (m.Config, error) {
 	var data []byte
 
 	if cacheHit {
+		fmt.Println("LOG --- Cache hit")
 		data = cacheData
-		fmt.Println("Cache hit")
 
 	} else {
 
-		fmt.Println("Cache miss")
+		fmt.Println("LOG --- Cache miss")
 
 		resp, err := http.Get(url)
 
@@ -36,11 +36,11 @@ func GetLocationAreas(url string, cache *pk.Cache) (m.Config, error) {
 		defer resp.Body.Close()
 
 		data, err = io.ReadAll(resp.Body)
-		cache.Add(url, data)
 
 		if err != nil {
 			return m.Config{}, err
 		}
+		cache.Add(url, data)
 	}
 
 	if err := json.Unmarshal(data, &config); err != nil {
@@ -50,23 +50,45 @@ func GetLocationAreas(url string, cache *pk.Cache) (m.Config, error) {
 	return config, nil
 }
 
-func GetAreaPokemon(location string) (*m.LocationArea, error) {
+func GetAreaPokemon(location string, cache *pk.Cache) (m.LocationArea, error) {
 
 	url := fmt.Sprintf("https://pokeapi.co/api/v2/location-area/%s/", location)
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
 
-	// Check for non-200
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status: %s", resp.Status)
-	}
-
+	cacheData, cacheHit := cache.Get(url)
 	var area m.LocationArea
-	if err := json.NewDecoder(resp.Body).Decode(&area); err != nil {
-		return nil, err
+
+	var data []byte
+
+	if cacheHit {
+		fmt.Println("LOG --- Cache hit")
+		data = cacheData
+
+	} else {
+		fmt.Println("LOG --- Cache miss")
+
+		resp, err := http.Get(url)
+
+		if err != nil {
+			return m.LocationArea{}, err
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			return m.LocationArea{}, fmt.Errorf("unexpected status: %s", resp.Status)
+		}
+
+		data, err = io.ReadAll(resp.Body)
+
+		if err != nil {
+			return m.LocationArea{}, err
+		}
+
+		cache.Add(url, data)
 	}
-	return &area, nil
+
+	if err := json.Unmarshal(data, &area); err != nil {
+		return m.LocationArea{}, err
+	}
+
+	return area, nil
 }

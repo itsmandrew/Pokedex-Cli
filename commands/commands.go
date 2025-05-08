@@ -117,7 +117,7 @@ func CommandExplore(config *models.Config, args []string) error {
 
 	locationName := args[0]
 
-	area, err := api.GetAreaPokemon(locationName)
+	area, err := api.GetAreaPokemon(locationName, Cache)
 
 	if err != nil {
 		return err
