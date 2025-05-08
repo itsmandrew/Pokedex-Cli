@@ -115,6 +115,11 @@ func CommandMapb(config *models.Config, args []string) error {
 
 func CommandExplore(config *models.Config, args []string) error {
 
+	if len(args) == 0 {
+		fmt.Println("No location provided for explore command")
+		return nil
+	}
+
 	locationName := args[0]
 
 	area, err := api.GetAreaPokemon(locationName, Cache)

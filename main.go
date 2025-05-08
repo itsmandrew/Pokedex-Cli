@@ -27,9 +27,16 @@ func main() {
 		}
 
 		fields := strings.Fields(scanner.Text())
+
+		if len(fields) == 0 {
+			fmt.Println("Please provide an argument")
+			continue
+		}
+
 		cmdName, args := fields[0], fields[1:]
 
 		val, ok := cmd.Table[cmdName]
+
 		if !ok {
 			fmt.Println("Unknown command:", cmdName)
 			continue
@@ -40,11 +47,4 @@ func main() {
 			os.Exit(1)
 		}
 	}
-}
-
-func cleanInput(text string) []string {
-
-	lower := strings.ToLower(text)
-
-	return strings.Fields(lower)
 }
