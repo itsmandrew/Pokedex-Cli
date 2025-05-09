@@ -6,6 +6,12 @@ type Config struct {
 	Results  []LocationArea `json:"results"`
 }
 
+type Command struct {
+	Name        string
+	Description string
+	Callback    func(args []string) error
+}
+
 type NamedAPIResource struct {
 	Name string `json:"name"`
 	URL  string `json:"url"`

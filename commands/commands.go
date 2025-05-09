@@ -10,7 +10,7 @@ import (
 	"github.com/itsmandrew/Pokedex-Cli/models"
 )
 
-var Table map[string]cliCommand
+var Table map[string]models.Command
 var Cache *pk.Cache
 
 func init() {
@@ -19,7 +19,7 @@ func init() {
 	cfg.Next = api.LOCATION_URL
 	cfg.Previous = ""
 
-	Table = map[string]cliCommand{
+	Table = map[string]models.Command{
 		"exit": {
 			Name:        "exit",
 			Description: "Exit the Pokedex",
@@ -45,15 +45,14 @@ func init() {
 			Description: "Lists all the possible pokemon encounters in a location area",
 			Callback:    func(args []string) error { return CommandExplore(&cfg, args) },
 		},
+		"catch": {
+			Name:        "catch",
+			Description: "Give the user a chance to catch a Pokemon",
+			Callback:    func(args []string) error { return CommandCatch(&cfg, args) },
+		},
 	}
 
 	Cache = pk.NewCache(3 * time.Minute)
-}
-
-type cliCommand struct {
-	Name        string
-	Description string
-	Callback    func(args []string) error
 }
 
 func CommandExit(config *models.Config, args []string) error {
@@ -133,5 +132,18 @@ func CommandExplore(config *models.Config, args []string) error {
 	for _, pk := range area.PokemonEncounters {
 		fmt.Printf("- %s\n", pk.Pokemon.Name)
 	}
+	return nil
+}
+
+func CommandCatch(config *models.Config, args []string) error {
+
+	if len(args) == 0 {
+		fmt.Println("Specify pokemon to catch")
+		return nil
+	}
+
+	pokemon := args[0]
+	fmt.Printf("Throwing a Pokeball at %s...\n", pokemon)
+
 	return nil
 }
