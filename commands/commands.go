@@ -164,14 +164,13 @@ func CommandCatch(config *models.Config, args []string) error {
 	}
 
 	baseExperience := wildPokemon.BaseExperience
-	fmt.Println(wildPokemon.BaseExperience)
 
 	caught := pk.SimulateCatch(baseExperience)
 
 	switch caught {
 	case true:
 		fmt.Printf("%s was caught!\n", pokeName)
-		// TODO add to Pokedex
+		fmt.Println("You may now inspect it with the inspect command.")
 		Pokedex[pokeName] = wildPokemon
 	case false:
 		fmt.Printf("%s escaped!\n", pokeName)
@@ -191,7 +190,6 @@ func CommandInspect(config *models.Config, args []string) error {
 	pokeName := args[0]
 
 	pokeVal, ok := Pokedex[pokeName]
-	// Todo fix the struct
 
 	if !ok {
 		fmt.Println("you have not caught that pokemon")
@@ -217,5 +215,12 @@ func CommandInspect(config *models.Config, args []string) error {
 }
 
 func CommandPokedex(config *models.Config, args []string) error {
+
+	fmt.Println("Your Pokedex:")
+
+	for name := range Pokedex {
+		fmt.Printf(" - %s\n", name)
+	}
+
 	return nil
 }
