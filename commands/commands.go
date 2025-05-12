@@ -1,4 +1,4 @@
-package utils
+package commands
 
 import (
 	"fmt"
@@ -142,8 +142,27 @@ func CommandCatch(config *models.Config, args []string) error {
 		return nil
 	}
 
-	pokemon := args[0]
-	fmt.Printf("Throwing a Pokeball at %s...\n", pokemon)
+	pokeName := args[0]
+	fmt.Printf("Throwing a Pokeball at %s...\n", pokeName)
+	wildPokemon, err := api.GetPokemon(pokeName, Cache)
+
+	if err != nil {
+		return err
+	}
+
+	baseExperience := wildPokemon.BaseExperience
+	fmt.Println(wildPokemon.BaseExperience)
+
+	caught := pk.SimulateCatch(baseExperience)
+
+	switch caught {
+	case true:
+		fmt.Printf("%s was caught!\n", pokeName)
+		// TODO add to Pokedex
+	case false:
+		fmt.Printf("%s escaped!\n", pokeName)
+
+	}
 
 	return nil
 }

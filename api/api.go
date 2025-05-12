@@ -29,6 +29,16 @@ func GetAreaPokemon(location string, cache *pk.Cache) (m.LocationArea, error) {
 	return area, err
 }
 
+func GetPokemon(name string, cache *pk.Cache) (m.Pokemon, error) {
+
+	url := "https://pokeapi.co/api/v2/pokemon/" + name
+	var pokemon m.Pokemon
+
+	err := fetchAndUnmarshal(url, cache, &pokemon)
+
+	return pokemon, err
+}
+
 func fetchAndUnmarshal(url string, cache pk.Cacher, target any) error {
 
 	cacheData, cacheHit := cache.Get(url)

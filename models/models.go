@@ -38,3 +38,9 @@ type EncounterVersionDetail struct {
 	// The “rarity” field is an integer percentage (0–100).
 	Rarity int `json:"rarity"`
 }
+
+type Pokemon struct {
+	ID             int    `json:"id"`
+	Name           string `json:"name"`
+	BaseExperience int    `json:"base_experience"`
+}
