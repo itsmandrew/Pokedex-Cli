@@ -12,6 +12,7 @@ import (
 
 var Table map[string]models.Command
 var Cache *pk.Cache
+var Pokedex map[string]models.Pokemon
 
 func init() {
 
@@ -53,6 +54,8 @@ func init() {
 	}
 
 	Cache = pk.NewCache(3 * time.Minute)
+
+	Pokedex = map[string]models.Pokemon{}
 }
 
 func CommandExit(config *models.Config, args []string) error {
@@ -159,6 +162,7 @@ func CommandCatch(config *models.Config, args []string) error {
 	case true:
 		fmt.Printf("%s was caught!\n", pokeName)
 		// TODO add to Pokedex
+		Pokedex[pokeName] = wildPokemon
 	case false:
 		fmt.Printf("%s escaped!\n", pokeName)
 
