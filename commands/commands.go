@@ -51,6 +51,16 @@ func init() {
 			Description: "Give the user a chance to catch a Pokemon",
 			Callback:    func(args []string) error { return CommandCatch(&cfg, args) },
 		},
+		"inspect": {
+			Name:        "inspect",
+			Description: "Lets the user observe caught pokemon's stats",
+			Callback:    func(args []string) error { return CommandInspect(&cfg, args) },
+		},
+		"pokedex": {
+			Name:        "pokedex",
+			Description: "Lists the all caught pokemon",
+			Callback:    func(args []string) error { return CommandPokedex(&cfg, args) },
+		},
 	}
 
 	Cache = pk.NewCache(3 * time.Minute)
@@ -168,5 +178,44 @@ func CommandCatch(config *models.Config, args []string) error {
 
 	}
 
+	return nil
+}
+
+func CommandInspect(config *models.Config, args []string) error {
+
+	if len(args) == 0 {
+		fmt.Println("Specify pokemon to inspect")
+		return nil
+	}
+
+	pokeName := args[0]
+
+	pokeVal, ok := Pokedex[pokeName]
+	// Todo fix the struct
+
+	if !ok {
+		fmt.Println("you have not caught that pokemon")
+		return nil
+	}
+
+	fmt.Printf("Name: %s\n", pokeVal.Name)
+	fmt.Printf("Height: %d\n", pokeVal.Height)
+	fmt.Printf("Weight: %d\n", pokeVal.Weight)
+
+	fmt.Println("Stats:")
+	for _, stat := range pokeVal.Stats {
+		fmt.Printf("  -%s: %d\n", stat.Type.Name, stat.BaseStat)
+	}
+
+	fmt.Println("Types:")
+	for _, tp := range pokeVal.Types {
+		fmt.Printf("  - %s\n", tp.Type.Name)
+	}
+
+	return nil
+
+}
+
+func CommandPokedex(config *models.Config, args []string) error {
 	return nil
 }
